@@ -1,0 +1,10 @@
+#!/bin/bash
+#set -e;
+
+db_image="jeffutter/postgresql"
+home="$DOKKU_ROOT/.postgresql"
+
+docker rm $(docker stop $(docker ps -a | grep $db_image | awk '{print $1}'))
+docker rmi -f $db_image
+
+rm -rf $home
