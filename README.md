@@ -1,5 +1,3 @@
-[![Join the chat at https://gitter.im/jeffutter/dokku-postgresql-plugin](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jeffutter/dokku-postgresql-plugin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 PostgreSQL plugin for Dokku
 ---------------------------
 
@@ -10,7 +8,7 @@ Installation
 ------------
 ```
 cd /var/lib/dokku/plugins
-git clone https://github.com/jeffutter/dokku-postgresql-plugin postgresql
+git clone https://github.com/bdentino/dokku-postgresql-plugin postgresql
 dokku plugins-install
 ```
 
