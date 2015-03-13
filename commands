@@ -99,7 +99,7 @@ case "$1" in
       echo "Postgresql container already running with ID: ${id}"
     else
       [[ $(docker run --rm=true "$db_image" lsb_release -cs) = 'trusty' ]] && docker_psql_version="9.3" || docker_psql_version="9.1"
-      docker run -p 5432:5432 -d -name dokku-postgresql -v "$DOKKU_ROOT/.postgresql/data":"/var/lib/postgresql/$docker_psql_version/main" "$db_image" bash -c "chown -R postgres:postgres /var/lib/postgresql/$docker_psql_version/main; su postgres -c \"/usr/lib/postgresql/$docker_psql_version/bin/postgres -D /var/lib/postgresql/$docker_psql_version/main -c config_file=/etc/postgresql/$docker_psql_version/main/postgresql.conf\""
+      docker run -p 5432:5432 -d --name dokku-postgresql -v "$DOKKU_ROOT/.postgresql/data":"/var/lib/postgresql/$docker_psql_version/main" "$db_image" bash -c "chown -R postgres:postgres /var/lib/postgresql/$docker_psql_version/main; su postgres -c \"/usr/lib/postgresql/$docker_psql_version/bin/postgres -D /var/lib/postgresql/$docker_psql_version/main -c config_file=/etc/postgresql/$docker_psql_version/main/postgresql.conf\""
     fi
     ;;
   postgresql:stop)
