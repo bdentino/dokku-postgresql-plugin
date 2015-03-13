@@ -34,9 +34,9 @@ db_image=jeffutter/postgresql
 
 id=$(docker ps | grep "$db_image":latest |  awk '{print $1}')
 if [[ -n "$id" ]]; then
-  postgresql_public_ip=$(docker port ${id} 5432 | awk '{split($0,a,":"); print a[1]}')
-  postgresql_private_ip=$(docker inspect ${id} | grep IPAddress | awk '{ print $2 }' | tr -d ',"')
-  postgresql_port=$(docker port ${id} 5432 | awk '{split($0,a,":"); print a[2]}')
+  postgresql_public_ip=$(docker port dokku-postgresql 5432 | awk '{split($0,a,":"); print a[1]}')
+  postgresql_private_ip=$(docker inspect dokku-postgresql | grep IPAddress | awk '{ print $2 }' | tr -d ',"')
+  postgresql_port=$(docker port dokku-postgresql 5432 | awk '{split($0,a,":"); print a[2]}')
   if [[ $postgresql_public_ip = "0.0.0.0" ]]; then
     postgresql_public_ip=localhost
   fi
@@ -69,7 +69,13 @@ case "$1" in
     PGPASSWORD="$admin_pw" PGUSER=root psql -h "$postgresql_public_ip" -p "$postgresql_port" -w template1 <<< "GRANT ALL PRIVILEGES ON DATABASE \"${postgresql_database}\" to \"${APP}\";"
 
     postgresql_port=5432
-    dokku config:set "$APP" DATABASE_URL="postgres://${APP}:${postgresql_password}@${postgresql_private_ip}:${postgresql_port}/${postgresql_database}" DB_USER="${APP}" DB_PASS="${postgresql_password}" DB_NAME="${postgresql_database}" DB_PORT="${postgresql_port}" DB_HOST="${postgresql_private_ip}" DB_TYPE="postgres"
+    dokku config:set "$APP" DATABASE_URL="postgres://${APP}:${postgresql_password}@\${DATABASE_PORT_${postgresql_port}_TCP_ADDR}:\${DATABASE_PORT_${postgresql_port}_TCP_PORT}/${postgresql_database}" \
+      DB_USER="$APP" \
+      DB_PASS="$postgresql_password" \
+      DB_NAME="$postgresql_database" \
+      DB_HOST="\${DATABASE_PORT_${postgresql_port}_TCP_ADDR}" \
+      DB_PORT="\${DATABASE_PORT_${postgresql_port}_TCP_PORT}" \
+      DB_TYPE="postgres"
     ;;
   postgresql:delete)
     check_container
@@ -93,12 +99,13 @@ case "$1" in
       echo "Postgresql container already running with ID: ${id}"
     else
       [[ $(docker run --rm=true "$db_image" lsb_release -cs) = 'trusty' ]] && docker_psql_version="9.3" || docker_psql_version="9.1"
-      docker run -p 5432:5432 -d -v "$DOKKU_ROOT/.postgresql/data":"/var/lib/postgresql/$docker_psql_version/main" "$db_image" bash -c "chown -R postgres:postgres /var/lib/postgresql/$docker_psql_version/main; su postgres -c \"/usr/lib/postgresql/$docker_psql_version/bin/postgres -D /var/lib/postgresql/$docker_psql_version/main -c config_file=/etc/postgresql/$docker_psql_version/main/postgresql.conf\""
+      docker run -p 5432:5432 -d -name dokku-postgresql -v "$DOKKU_ROOT/.postgresql/data":"/var/lib/postgresql/$docker_psql_version/main" "$db_image" bash -c "chown -R postgres:postgres /var/lib/postgresql/$docker_psql_version/main; su postgres -c \"/usr/lib/postgresql/$docker_psql_version/bin/postgres -D /var/lib/postgresql/$docker_psql_version/main -c config_file=/etc/postgresql/$docker_psql_version/main/postgresql.conf\""
     fi
     ;;
   postgresql:stop)
     check_container
-    docker stop ${id}
+    docker stop dokku-postgresql
+    docker rm dokku-postgresql
     ;;
   postgresql:status)
     if [[ "$id" != "" ]]; then
