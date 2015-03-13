@@ -69,12 +69,12 @@ case "$1" in
     PGPASSWORD="$admin_pw" PGUSER=root psql -h "$postgresql_public_ip" -p "$postgresql_port" -w template1 <<< "GRANT ALL PRIVILEGES ON DATABASE \"${postgresql_database}\" to \"${APP}\";"
 
     postgresql_port=5432
-    dokku config:set "$APP" DATABASE_URL="postgres://${APP}:${postgresql_password}@\${DATABASE_PORT_${postgresql_port}_TCP_ADDR}:\${DATABASE_PORT_${postgresql_port}_TCP_PORT}/${postgresql_database}" \
+    dokku config:set "$APP" DB_URL="postgres://${APP}:${postgresql_password}@\${POSTGRESQL_PORT_${postgresql_port}_TCP_ADDR}:\${POSTGRESQL_PORT_${postgresql_port}_TCP_PORT}/${postgresql_database}" \
       DB_USER="$APP" \
       DB_PASS="$postgresql_password" \
       DB_NAME="$postgresql_database" \
-      DB_HOST="\${DATABASE_PORT_${postgresql_port}_TCP_ADDR}" \
-      DB_PORT="\${DATABASE_PORT_${postgresql_port}_TCP_PORT}" \
+      DB_HOST="\${POSTGRESQL_PORT_${postgresql_port}_TCP_ADDR}" \
+      DB_PORT="\${POSTGRESQL_PORT_${postgresql_port}_TCP_PORT}" \
       DB_TYPE="postgres"
     ;;
   postgresql:delete)
@@ -86,7 +86,7 @@ case "$1" in
     PGPASSWORD="$admin_pw" PGUSER=root psql -h "$postgresql_public_ip" -p "$postgresql_port" -w template1 <<< "DROP DATABASE \"${postgresql_database}\";"
     PGPASSWORD="$admin_pw" PGUSER=root psql -h "$postgresql_public_ip" -p "$postgresql_port" -w template1 <<< "DROP USER \"${APP}\";"
 
-    dokku config:unset "$APP" DATABASE_URL DB_USER DB_PASS DB_PORT DB_TYPE DB_NAME DB_HOST
+    dokku config:unset "$APP" DB_URL DB_USER DB_PASS DB_PORT DB_TYPE DB_NAME DB_HOST
     ;;
   postgresql:list)
     check_container
