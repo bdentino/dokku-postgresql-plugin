@@ -5,5 +5,18 @@ STDIN=$(cat)
 APP="$1"
 
 if [[ -f "$DOKKU_ROOT/.postgresql/pass_$APP" ]]; then
-  echo "--link dokku-postgresql:postgresql"
+  postgresql_public_ip=$(docker port dokku-postgresql 5432 | awk '{split($0,a,":"); print a[1]}')
+  postgresql_private_ip=$(docker inspect dokku-postgresql | grep IPAddress | awk '{ print $2 }' | tr -d ',"')
+  postgresql_port=$(docker port dokku-postgresql 5432 | awk '{split($0,a,":"); print a[2]}')
+  postgresql_password=$(cat "$DOKKU_ROOT/.postgresql/pass_$APP")
+  postgresql_port=5432
+  postgresql_database="${APP}_production"
+
+  if [[ $postgresql_public_ip = "0.0.0.0" ]]; then
+    postgresql_public_ip=localhost
+  fi
+
+  echo " \
+    --link dokku-postgresql:postgresql \
+  "
 fi
