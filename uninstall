@@ -4,7 +4,12 @@
 db_image="jeffutter/postgresql"
 home="$DOKKU_ROOT/.postgresql"
 
-docker rm $(docker stop $(docker ps -a | grep $db_image | awk '{print $1}'))
-docker rmi -f $db_image
+if [[ -n "$(docker ps -a | grep $db_image)" ]]; then
+  docker rm $(docker stop $(docker ps -a | grep $db_image | awk '{print $1}'))
+fi
+
+if [[ -n "$(docker images | grep $db_image)" ]]; then
+  docker rmi -f $(docker images | grep $db_image)
+fi
 
 rm -rf $home
