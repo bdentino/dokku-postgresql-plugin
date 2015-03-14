@@ -2,7 +2,7 @@
 #set -e;
 
 db_image="jeffutter/postgresql"
-home=$("cat HOME") || "/home/dokku/.postgresql"
+home=$(cat HOME)
 
 if [[ -n "$(docker ps -a | grep $db_image)" ]]; then
   docker rm $(docker stop $(docker ps -a | grep $db_image | awk '{print $1}'))
@@ -11,3 +11,5 @@ fi
 if [[ -n "$(docker images | grep $db_image)" ]]; then
   docker rmi -f $(docker images | grep $db_image)
 fi
+
+rm -rf $home
