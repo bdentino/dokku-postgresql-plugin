@@ -16,3 +16,4 @@ echo "Remove $home? (Y/n)"
 read confirm
 if [[ "$confirm" == "Y" ]]; then
   rm -rf $home
+fi
