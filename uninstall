@@ -9,7 +9,7 @@ if [[ -n "$(docker ps -a | grep $db_image)" ]]; then
 fi
 
 if [[ -n "$(docker images | grep $db_image)" ]]; then
-  docker rmi -f $(docker images | grep $db_image)
+  docker rmi -f $(docker images | grep $db_image | awk '{print $1}')
 fi
 
 rm -rf $home
