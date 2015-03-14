@@ -86,7 +86,7 @@ case "$1" in
     PGPASSWORD="$admin_pw" PGUSER=root psql -h "$postgresql_public_ip" -p "$postgresql_port" -w template1 <<< "DROP DATABASE \"${postgresql_database}\";"
     PGPASSWORD="$admin_pw" PGUSER=root psql -h "$postgresql_public_ip" -p "$postgresql_port" -w template1 <<< "DROP USER \"${APP}\";"
 
-    if [[ -f "$DOKKU_ROOT/.postgresql/pass_$app" ]]; then
+    if [[ -f "$DOKKU_ROOT/.postgresql/pass_$APP" ]]; then
       rm "$DOKKU_ROOT/.postgresql/pass_$APP"
     fi
 
