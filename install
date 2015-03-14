@@ -2,7 +2,7 @@
 
 # Build postgresql image
 db_image="jeffutter/postgresql"
-home="$home"
+home="$DOKKU_ROOT"
 echo $home > HOME
 
 docker pull "$db_image"
