@@ -124,11 +124,11 @@ case "$1" in
     if [[ -f "$DOKKU_ROOT/.postgresql/pass_$APP" ]]; then
       postgresql_password=$(cat "$DOKKU_ROOT/.postgresql/pass_$APP")
       postgresql_port=5432
-      dokku config:set "$APP" DB_URL="postgres://${APP}:${postgresql_password}@\${postgresql_public_ip}:\${postgresql_port}/${postgresql_database}" \
+      dokku config:set "$APP" DB_URL="postgres://${APP}:${postgresql_password}@${postgresql_public_ip}:${postgresql_port}/${postgresql_database}" \
         DB_USER="$APP" \
         DB_PASS="$postgresql_password" \
         DB_NAME="$postgresql_database" \
-        DB_HOST="$postgresql_public_ip" \
+        DB_HOST="$postgresql_private_ip" \
         DB_PORT="$postgresql_port" \
         DB_TYPE="postgres"
     else

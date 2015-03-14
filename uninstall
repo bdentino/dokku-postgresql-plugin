@@ -17,3 +17,5 @@ read confirm
 if [[ "$confirm" == "Y" ]]; then
   rm -rf $home
 fi
+
+rm HOME
