@@ -3,7 +3,8 @@
 # Build postgresql image
 db_image="jeffutter/postgresql"
 home="$DOKKU_ROOT/.postgresql"
-echo $home > HOME
+scriptdir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+echo $home > "$scriptdir/HOME"
 
 docker pull "$db_image"
 
