@@ -19,4 +19,6 @@ if [[ -f "$DOKKU_ROOT/.postgresql/pass_$APP" ]]; then
   echo " \
     $STDIN --link dokku-postgresql:postgresql \
   "
+else
+ echo "$STDIN"
 fi
